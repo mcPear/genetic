@@ -1,12 +1,18 @@
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
 /**
  * Created by maciej on 02.03.18.
  */
-public class GeneticAlgorithmRun {
+public class GARun {
     private static final Random RANDOM = new Random(System.currentTimeMillis());
     private static final int FULL_CHANCE_PERCENT = 100;
     private final int maxGenerationsCount;
@@ -23,8 +29,8 @@ public class GeneticAlgorithmRun {
     private GAEvaluationResult bestEvaluationResult;
     private GARunResult runResult = new GARunResult();
 
-    public GeneticAlgorithmRun(int maxGenerationsCount, int populationSize, int crossoverChancePercent,
-                               int mutationChancePercent, int tournamentSize, int minGenomeEvaluation, QapCase qapCase) {
+    public GARun(int maxGenerationsCount, int populationSize, int crossoverChancePercent,
+                 int mutationChancePercent, int tournamentSize, int minGenomeEvaluation, QapCase qapCase) {
         this.maxGenerationsCount = maxGenerationsCount;
         this.populationSize = populationSize;
         this.crossoverChancePercent = crossoverChancePercent;
@@ -34,7 +40,7 @@ public class GeneticAlgorithmRun {
         this.qapCase = qapCase;
     }
 
-    public GAEvaluationResult run() {
+    public GAEvaluationResult run() throws IOException {
         resetCounter();
         initialisePopulation();
         evaluate();
@@ -47,21 +53,8 @@ public class GeneticAlgorithmRun {
             incrementCounter();
             evaluate();
         }
+        logResult();
         return bestEvaluationResult;
-//        begin
-//        t:=0;
-//        initialisePopulation( pop(t0) );
-//        evaluate( pop(t0) );
-//        while (not stop_condition) do 
-//        begin
-//          pop(t+1) := selection( pop(t) );
-//          pop(t+1) := crossover( pop(t+1) );
-//          pop(t+1) := mutation( pop(t+1) );
-//          evaluate( pop(t+1) );
-//          t:=t+1;
-//        end 
-//        return the_best_solution
-//                end
     }
 
     private void initialisePopulation() {
@@ -72,16 +65,19 @@ public class GeneticAlgorithmRun {
     }
 
     private void evaluate() {
-        List<Integer> evaluationList = new ArrayList<>();
-        for (int i = 0; i < currentPopulation.size(); i++) {
-            evaluationList.add(currentPopulation.get(i).getEvaluation());
-        }
-        Collections.sort(evaluationList);
-        currentEvaluationResult = new GAEvaluationResult(evaluationList.get(0), evaluationList.get(evaluationList.size() / 2), evaluationList.size() - 1);
+        currentEvaluationResult = new GAEvaluationResult(getEvaluationList());
         if (bestEvaluationResult == null || currentEvaluationResult.lowerThan(bestEvaluationResult)) {
             bestEvaluationResult = currentEvaluationResult;
         }
         runResult.add(currentEvaluationResult);
+    }
+
+    private List<Integer> getEvaluationList() {
+        List<Integer> evaluationList = new ArrayList<>();
+        for (int i = 0; i < currentPopulation.size(); i++) {
+            evaluationList.add(currentPopulation.get(i).getEvaluation());
+        }
+        return evaluationList;
     }
 
     private void selection() {
@@ -146,6 +142,26 @@ public class GeneticAlgorithmRun {
 
     private boolean isStopConditionSatisfied() {
         return counter >= maxGenerationsCount || (bestEvaluationResult != null && bestEvaluationResult.best <= minGenomeEvaluation);
+    }
+
+    private void logResult() throws IOException {
+
+
+        FileUtils.writeStringToFile(new File("./results/" + getFileName()), runResult.toCsvString());
+    }
+
+    private String getFileName() {
+        final char DEL = '_';
+
+        return "run" + DEL + getTime() + DEL + "gen" + maxGenerationsCount + DEL + "pop" + populationSize + DEL + "cross" +
+                crossoverChancePercent + DEL + "mut" + mutationChancePercent + DEL + "tour" + tournamentSize + DEL +
+                "min" + minGenomeEvaluation + DEL + "n" + qapCase.getN() + ".csv";
+    }
+
+    private String getTime() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 
 }

@@ -6,11 +6,11 @@ import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
         QapCase qapCase = new QapCase();
         qapCase.loadFromFile(qapCaseFilePaths().get(4));
-        GeneticAlgorithmRun run1 = new GeneticAlgorithmRun(1000, 1000,
-                50, 30, 2, 1652, qapCase);
+        GARun run1 = new GARun(300, 1000,
+                50, 70, 2, 1652, qapCase);
         //100, 100, 50, 1, 5, 1 for 12 case finds max
         //1000, 1000, 50, 30, 2 for 12 case finds fast max
         System.out.println("\n\nRun: " + run1.run().best);
@@ -55,11 +55,11 @@ public class Main {
 
     public static List<String> qapCaseFilePaths() {
         List<String> paths = new ArrayList();
-        paths.add("res/had12");
-        paths.add("res/had14");
-        paths.add("res/had16");
-        paths.add("res/had18");
-        paths.add("res/had20");
+        paths.add("resources/had12");
+        paths.add("resources/had14");
+        paths.add("resources/had16");
+        paths.add("resources/had18");
+        paths.add("resources/had20");
         return paths;
     }
 }
