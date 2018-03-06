@@ -1,3 +1,5 @@
+import org.apache.commons.math3.util.Pair;
+
 /**
  * Created by maciej on 01.03.18.
  */
@@ -29,11 +31,14 @@ public class GenomeInCase {
         requiresNewEvaluation = true;
     }
 
-    public GenomeInCase cross(GenomeInCase other) {
-        return new GenomeInCase(genome.cross(other.genome), qapCase);
+    public Pair<GenomeInCase, GenomeInCase> cross(GenomeInCase other) {
+        Pair<Genome, Genome> children = genome.cross(other.genome);
+        return new Pair<>(
+                new GenomeInCase(children.getFirst(), qapCase), new GenomeInCase(children.getSecond(), qapCase)
+        );
     }
 
-    public boolean valid(){
+    public boolean valid() {
         return qapCase.getN() == genome.getVector().size();
     }
 

@@ -1,4 +1,5 @@
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.math3.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -104,12 +105,19 @@ public class GARun {
     }
 
     private void crossover() {
-        for (int i = 0; i < currentPopulation.size(); i++) {
-            if (occuredCrossover()) {
-                currentPopulation.set(i, currentPopulation.get(i).cross(getRandomGenomeInCase()));
-                if (!currentPopulation.get(i).valid()) throw new RuntimeException("Invalid genome !"); //todo remove
-            }
+        List<GenomeInCase> crossedOverPopulation = new ArrayList<>();
+        for (int i = 0; i < currentPopulation.size() / 2; i++) {
+            Pair<GenomeInCase, GenomeInCase> children = getRandomGenomeInCase().cross(getRandomGenomeInCase());
+            crossedOverPopulation.add(children.getFirst());
+            crossedOverPopulation.add(children.getSecond());
         }
+        currentPopulation = crossedOverPopulation;
+//        for (int i = 0; i < currentPopulation.size(); i++) {
+//            if (occuredCrossover()) {
+//                currentPopulation.set(i, currentPopulation.get(i).cross(getRandomGenomeInCase()));
+//                if (!currentPopulation.get(i).valid()) throw new RuntimeException("Invalid genome !"); //todo remove
+//            }
+//        }
     }
 
     private GenomeInCase getRandomGenomeInCase() {
@@ -141,12 +149,10 @@ public class GARun {
     }
 
     private boolean isStopConditionSatisfied() {
-        return counter >= maxGenerationsCount || (bestEvaluationResult != null && bestEvaluationResult.best <= minGenomeEvaluation);
+        return maxGenerationsCount <= counter || (bestEvaluationResult != null && bestEvaluationResult.best <= minGenomeEvaluation);
     }
 
     private void logResult() throws IOException {
-
-
         FileUtils.writeStringToFile(new File("./results/" + getFileName()), runResult.toCsvString());
     }
 

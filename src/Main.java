@@ -6,11 +6,15 @@ import java.util.List;
 
 public class Main {
 
+    //TODO roulette
+    //FIXME gene mutation
+    //FIXME include second child
+
     public static void main(String[] args) throws IOException {
         QapCase qapCase = new QapCase();
         qapCase.loadFromFile(qapCaseFilePaths().get(4));
         GARun run1 = new GARun(300, 1000,
-                50, 70, 2, 1652, qapCase);
+                70, 10, 5, 1652, qapCase);
         //100, 100, 50, 1, 5, 1 for 12 case finds max
         //1000, 1000, 50, 30, 2 for 12 case finds fast max
         System.out.println("\n\nRun: " + run1.run().best);
@@ -27,30 +31,30 @@ public class Main {
         //        for (int i = 0; i < 1000; i++) {
 //            testCrossover();
 //        }
-        List<String> qapCaseFilePaths = qapCaseFilePaths();
-        QapCase qapCase = new QapCase();
-        qapCase.loadFromFile(qapCaseFilePaths.get(0));
-        System.out.println(qapCase.toString());
-        Genome genome = new Genome(qapCase.getN());
-        System.out.println(genome);
-        Genome genome1 = new Genome(genome);
-        System.out.println(genome1);
-        genome1.mutateBySingleSwap();
-        System.out.println(genome1);
-        Genome genome2 = new Genome(qapCase.getN());
-        System.out.println(genome2);
-        Genome crossed = genome.cross(genome2);
-        System.out.println(crossed);
-        System.out.println("---------------");
-        List<Integer> bestSolution = new ArrayList<>(Arrays.asList(3, 10, 11, 2, 12, 5, 6, 7, 8, 1, 4, 9));
-        Genome genomeBest = new Genome(bestSolution);
-        GenomeInCase genomeInCase = new GenomeInCase(genomeBest, qapCase);
-        System.out.println("eval of best genome: " + genomeInCase.getEvaluation());
-        System.out.println("\nCross fix test: \n");
-        System.out.println(genome1 + "\n");
-        System.out.println(genome2 + "\n");
-        Genome crossed2 = genome1.cross(genome2);
-        System.out.println("\n" + crossed2);
+//        List<String> qapCaseFilePaths = qapCaseFilePaths();
+//        QapCase qapCase = new QapCase();
+//        qapCase.loadFromFile(qapCaseFilePaths.get(0));
+//        System.out.println(qapCase.toString());
+//        Genome genome = new Genome(qapCase.getN());
+//        System.out.println(genome);
+//        Genome genome1 = new Genome(genome);
+//        System.out.println(genome1);
+//        genome1.mutateBySingleSwap();
+//        System.out.println(genome1);
+//        Genome genome2 = new Genome(qapCase.getN());
+//        System.out.println(genome2);
+//        //Genome crossed = genome.cross(genome2);
+//        //System.out.println(crossed);
+//        System.out.println("---------------");
+//        List<Integer> bestSolution = new ArrayList<>(Arrays.asList(3, 10, 11, 2, 12, 5, 6, 7, 8, 1, 4, 9));
+//        Genome genomeBest = new Genome(bestSolution);
+//        GenomeInCase genomeInCase = new GenomeInCase(genomeBest, qapCase);
+//        System.out.println("eval of best genome: " + genomeInCase.getEvaluation());
+//        System.out.println("\nCross fix test: \n");
+//        System.out.println(genome1 + "\n");
+//        System.out.println(genome2 + "\n");
+//        Genome crossed2 = genome1.cross(genome2);
+//        System.out.println("\n" + crossed2);
     }
 
     public static List<String> qapCaseFilePaths() {

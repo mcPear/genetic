@@ -1,3 +1,6 @@
+
+import org.apache.commons.math3.util.Pair;
+
 import java.util.*;
 
 /**
@@ -36,17 +39,24 @@ public class Genome {
         Collections.swap(vector, i, j);
     }
 
-    public Genome cross(Genome other) {
+    public Pair<Genome, Genome> cross(Genome other) {
         if (vector.size() == 1 || vector.size() == 2) {
-            return this;
+            return new Pair<>(this, other);
         }
-
         int half = n / 2;
-        List<Integer> result = new ArrayList<>(vector.subList(0, half));
-        result.addAll(new ArrayList<>(other.vector.subList(half, other.vector.size())));
-        Genome resultGenome = new Genome(result);
-        fix(resultGenome);
-        return resultGenome;
+
+//        System.out.println("Before crossover: "+this+" and "+other);
+
+        List<Integer> child1 = new ArrayList<>(vector.subList(0, half));
+        List<Integer> child2 = new ArrayList<>(other.vector.subList(0, half));
+        child1.addAll(new ArrayList<>(other.vector.subList(half, other.vector.size())));
+        child2.addAll(new ArrayList<>(vector.subList(half, vector.size())));
+        Genome genome1 = new Genome(child1);
+        Genome genome2 = new Genome(child2);
+        fix(genome1);
+        fix(genome2);
+//        System.out.println("Crossover: "+this+" crossed with "+other+" gave "+genome1+" and "+genome2);
+        return new Pair<>(genome1, genome2);
     }
 
     private void fix(Genome genome) {
