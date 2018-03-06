@@ -10,8 +10,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
         QapCase qapCase = new QapCase();
         qapCase.loadFromFile(qapCaseFilePaths().get(4));
-        GARun run1 = new GARun(100, 1000,
-                90, 6, 6, 1652, qapCase);
+        GARun run1 = new GARun(150, 1000,
+                70, 5, 5, 1652, qapCase);
         //100, 100, 50, 1, 5, 1 for 12 case finds max
         //1000, 1000, 50, 30, 2 for 12 case finds fast max
         System.out.println("\n\nRun: " + run1.run().best);

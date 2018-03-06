@@ -10,6 +10,7 @@ public class GenomeInCase {
     private final QapCase qapCase;
     private Integer evaluation;
     private boolean requiresNewEvaluation = true;
+    private double currentRoulettePropability = 0;
 
     public GenomeInCase(Genome genome, QapCase qapCase) {
         this.genome = genome;
@@ -42,6 +43,14 @@ public class GenomeInCase {
         return new Pair<>(
                 new GenomeInCase(children.getFirst(), qapCase), new GenomeInCase(children.getSecond(), qapCase)
         );
+    }
+
+    public double getCurrentRoulettePropability() {
+        return currentRoulettePropability;
+    }
+
+    public void setCurrentRoulettePropability(double currentRoulettePropability) {
+        this.currentRoulettePropability = currentRoulettePropability;
     }
 
     public boolean valid() {

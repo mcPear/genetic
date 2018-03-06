@@ -5,10 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by maciej on 02.03.18.
@@ -82,8 +79,8 @@ public class GARun {
     }
 
     private void selection() {
-        tournamentSelection();
-        //rouletteSelection();
+        //tournamentSelection();
+        rouletteSelection();
     }
 
     private void tournamentSelection() {
@@ -106,7 +103,33 @@ public class GARun {
     }
 
     private void rouletteSelection() {
-        double sumOfFinesses = currentPopulation.stream().mapToDouble(genome -> genome.getFitness()).sum();
+        double minFitness = currentPopulation.stream().mapToDouble(GenomeInCase::getFitness).min().getAsDouble();
+        double maxFitness = currentPopulation.stream().mapToDouble(GenomeInCase::getFitness).max().getAsDouble();
+        double sumOfScaledFinesses = 0;
+        for (int i = 0; i < currentPopulation.size(); i++) {
+            sumOfScaledFinesses += scaleFitness(currentPopulation.get(i).getFitness(), minFitness, maxFitness);
+        }
+        double sumOfPropabilities = 0;
+        Collections.sort(currentPopulation, Comparator.comparing(GenomeInCase::getFitness));
+        for (int i = 0; i < currentPopulation.size(); i++) {
+            sumOfPropabilities += scaleFitness(currentPopulation.get(i).getFitness(), minFitness, maxFitness) / sumOfScaledFinesses;
+            currentPopulation.get(i).setCurrentRoulettePropability(sumOfPropabilities);
+        }
+        List<GenomeInCase> selectedPopulation = new ArrayList<>();
+        Collections.sort(currentPopulation, Comparator.comparing(GenomeInCase::getCurrentRoulettePropability));
+        while (selectedPopulation.size() < currentPopulation.size()) {
+            double draw = RANDOM.nextDouble();
+            selectedPopulation.add(currentPopulation.stream().filter(gic -> gic.getCurrentRoulettePropability() > draw).findFirst().get());
+        }
+        currentPopulation = selectedPopulation;
+    }
+
+    private double scaleFitness(double fitness, double min, double max) {
+        if (fitness == min) return fitness;
+        double scale = 100d;
+        int pow = 4;
+        double result = Math.pow(fitness * scale * (fitness - min) / (max - min), pow);
+        return result;
     }
 
     private void crossover() {
@@ -124,12 +147,6 @@ public class GARun {
             }
         }
         currentPopulation = crossedOverPopulation;
-//        for (int i = 0; i < currentPopulation.size(); i++) {
-//            if (occuredCrossover()) {
-//                currentPopulation.set(i, currentPopulation.get(i).cross(getRandomGenomeInCase()));
-//                if (!currentPopulation.get(i).valid()) throw new RuntimeException("Invalid genome !"); //todo remove
-//            }
-//        }
     }
 
     private GenomeInCase getRandomGenomeInCase() {
