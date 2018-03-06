@@ -1,20 +1,17 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Main {
 
     //TODO roulette
-    //FIXME gene mutation
-    //FIXME include second child
 
     public static void main(String[] args) throws IOException {
         QapCase qapCase = new QapCase();
         qapCase.loadFromFile(qapCaseFilePaths().get(4));
-        GARun run1 = new GARun(300, 1000,
-                70, 10, 5, 1652, qapCase);
+        GARun run1 = new GARun(100, 1000,
+                90, 6, 6, 1652, qapCase);
         //100, 100, 50, 1, 5, 1 for 12 case finds max
         //1000, 1000, 50, 30, 2 for 12 case finds fast max
         System.out.println("\n\nRun: " + run1.run().best);
@@ -39,7 +36,7 @@ public class Main {
 //        System.out.println(genome);
 //        Genome genome1 = new Genome(genome);
 //        System.out.println(genome1);
-//        genome1.mutateBySingleSwap();
+//        genome1.mutateGenes();
 //        System.out.println(genome1);
 //        Genome genome2 = new Genome(qapCase.getN());
 //        System.out.println(genome2);

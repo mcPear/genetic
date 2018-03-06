@@ -1,5 +1,7 @@
 import org.apache.commons.math3.util.Pair;
 
+import java.util.function.Supplier;
+
 /**
  * Created by maciej on 01.03.18.
  */
@@ -22,12 +24,16 @@ public class GenomeInCase {
         return evaluation;
     }
 
+    public Double getFitness() {
+        return 10_000d / getEvaluation();
+    }
+
     private int evaluate() {
         return qapCase.evaluate(genome);
     }
 
-    public void mutate() {
-        genome.mutateBySingleSwap();
+    public void mutateGenes(Supplier<Boolean> possibilityFunction) {
+        genome.mutateGenes(possibilityFunction);
         requiresNewEvaluation = true;
     }
 

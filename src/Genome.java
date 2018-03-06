@@ -2,6 +2,7 @@
 import org.apache.commons.math3.util.Pair;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * Created by maciej on 01.03.18.
@@ -29,14 +30,21 @@ public class Genome {
         this.vector = vector;
     }
 
-    public void mutateBySingleSwap() {
-        Integer i, j;
+    public void mutateGenes(Supplier<Boolean> possibilityFunction) {
+        for (int i = 0; i < vector.size(); i++) {
+            if (possibilityFunction.get()) {
+                swapGene(i);
+            }
+        }
+    }
+
+    private void swapGene(int index) {
+        int j;
         do {
-            i = random.nextInt(n);
             j = random.nextInt(n);
         }
-        while (i == j);
-        Collections.swap(vector, i, j);
+        while (index == j);
+        Collections.swap(vector, index, j);
     }
 
     public Pair<Genome, Genome> cross(Genome other) {

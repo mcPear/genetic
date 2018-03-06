@@ -83,6 +83,7 @@ public class GARun {
 
     private void selection() {
         tournamentSelection();
+        //rouletteSelection();
     }
 
     private void tournamentSelection() {
@@ -104,12 +105,23 @@ public class GARun {
         return winner;
     }
 
+    private void rouletteSelection() {
+        double sumOfFinesses = currentPopulation.stream().mapToDouble(genome -> genome.getFitness()).sum();
+    }
+
     private void crossover() {
         List<GenomeInCase> crossedOverPopulation = new ArrayList<>();
         for (int i = 0; i < currentPopulation.size() / 2; i++) {
-            Pair<GenomeInCase, GenomeInCase> children = getRandomGenomeInCase().cross(getRandomGenomeInCase());
-            crossedOverPopulation.add(children.getFirst());
-            crossedOverPopulation.add(children.getSecond());
+            GenomeInCase first = getRandomGenomeInCase();
+            GenomeInCase second = getRandomGenomeInCase();
+            if (occuredCrossover()) {
+                Pair<GenomeInCase, GenomeInCase> children = first.cross(second);
+                crossedOverPopulation.add(children.getFirst());
+                crossedOverPopulation.add(children.getSecond());
+            } else {
+                crossedOverPopulation.add(first);
+                crossedOverPopulation.add(second);
+            }
         }
         currentPopulation = crossedOverPopulation;
 //        for (int i = 0; i < currentPopulation.size(); i++) {
@@ -125,11 +137,9 @@ public class GARun {
     }
 
     private void mutation() {
-        currentPopulation.forEach(gic -> {
-            if (occuredMutation()) {
-                gic.mutate();
-            }
-        });
+        currentPopulation.forEach(gic ->
+                gic.mutateGenes(this::occuredMutation)
+        );
     }
 
     private void resetCounter() {
@@ -140,7 +150,7 @@ public class GARun {
         counter++;
     }
 
-    private boolean occuredMutation() {
+    private Boolean occuredMutation() {
         return RANDOM.nextInt(FULL_CHANCE_PERCENT) < mutationChancePercent;
     }
 
