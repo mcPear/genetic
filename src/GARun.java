@@ -19,6 +19,7 @@ public class GARun {
     private final int mutationChancePercent;
     private final int tournamentSize;
     private final int minGenomeEvaluation;
+    private final boolean useTournament;
     private final QapCase qapCase;
 
     private List<GenomeInCase> currentPopulation;
@@ -27,14 +28,15 @@ public class GARun {
     private GAEvaluationResult bestEvaluationResult;
     private GARunResult runResult = new GARunResult();
 
-    public GARun(int maxGenerationsCount, int populationSize, int crossoverChancePercent,
-                 int mutationChancePercent, int tournamentSize, int minGenomeEvaluation, QapCase qapCase) {
+    public GARun(int maxGenerationsCount, int populationSize, int crossoverChancePercent, int mutationChancePercent,
+                 int tournamentSize, int minGenomeEvaluation, boolean useTournament, QapCase qapCase) {
         this.maxGenerationsCount = maxGenerationsCount;
         this.populationSize = populationSize;
         this.crossoverChancePercent = crossoverChancePercent;
         this.mutationChancePercent = mutationChancePercent;
         this.tournamentSize = tournamentSize;
         this.minGenomeEvaluation = minGenomeEvaluation;
+        this.useTournament = useTournament;
         this.qapCase = qapCase;
     }
 
@@ -79,8 +81,11 @@ public class GARun {
     }
 
     private void selection() {
-        //tournamentSelection();
-        rouletteSelection();
+        if (useTournament) {
+            tournamentSelection();
+        } else {
+            rouletteSelection();
+        }
     }
 
     private void tournamentSelection() {
@@ -125,6 +130,7 @@ public class GARun {
     }
 
     private double scaleFitness(double fitness, double min, double max) {
+//        return fitness;
         if (fitness == min) return fitness;
         double scale = 100d;
         int pow = 4;
@@ -135,8 +141,8 @@ public class GARun {
     private void crossover() {
         List<GenomeInCase> crossedOverPopulation = new ArrayList<>();
         for (int i = 0; i < currentPopulation.size() / 2; i++) {
-            GenomeInCase first = getRandomGenomeInCase();
-            GenomeInCase second = getRandomGenomeInCase();
+            GenomeInCase first = currentPopulation.get(i);
+            GenomeInCase second = currentPopulation.get(i + currentPopulation.size() / 2);
             if (occuredCrossover()) {
                 Pair<GenomeInCase, GenomeInCase> children = first.cross(second);
                 crossedOverPopulation.add(children.getFirst());
@@ -187,7 +193,7 @@ public class GARun {
         final char DEL = '_';
 
         return "run" + DEL + getTime() + DEL + "gen" + maxGenerationsCount + DEL + "pop" + populationSize + DEL + "cross" +
-                crossoverChancePercent + DEL + "mut" + mutationChancePercent + DEL + "tour" + tournamentSize + DEL +
+                crossoverChancePercent + DEL + "mut" + mutationChancePercent + DEL + (useTournament ? "tour" + tournamentSize + DEL : "") +
                 "min" + minGenomeEvaluation + DEL + "n" + qapCase.getN() + ".csv";
     }
 
