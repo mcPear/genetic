@@ -62,15 +62,15 @@ public class QapCase {
     }
 
     public int evaluate(Genome genome) {
-        RealMatrix rearrangedDistanceMatrix = applyGenomePermutationToDistanceMatrix(genome.getVector());
+        RealMatrix rearrangedDistanceMatrix = applyGenomePermutationToMatrix(genome.getVector(), distanceMatrix);
 //        RealMatrix costsMatrix = flowMatrix.multiply(rearrangedDistanceMatrix);
-        RealMatrix costsMatrix = hadamardMult(flowMatrix, rearrangedDistanceMatrix);
+        RealMatrix costsMatrix = hadamardMult(flowMatrix, rearrangedDistanceMatrix, n);
         //System.out.println("costsMatrix:\n\n" + matrixToString(costsMatrix) + "\n\n");
         RealMatrixPreservingVisitor sumVisitor = new RealMatrixSumVisitor();
         return (int) costsMatrix.walkInOptimizedOrder(sumVisitor);
     }
 
-    private RealMatrix hadamardMult(RealMatrix matrix1, RealMatrix matrix2) {
+    private RealMatrix hadamardMult(RealMatrix matrix1, RealMatrix matrix2, int n) {
         RealMatrix result = MatrixUtils.createRealMatrix(n, n);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -80,9 +80,11 @@ public class QapCase {
         return result;
     }
 
-    private RealMatrix applyGenomePermutationToDistanceMatrix(List<Integer> permutation) {
+    private RealMatrix applyGenomePermutationToMatrix(List<Integer> permutation, RealMatrix distanceMatrix) {
+        int n = permutation.size();
         RealMatrix rearrangedMatrixByColumn = MatrixUtils.createRealMatrix(n, n);
         for (int i = 0; i < n; i++) {
+            //System.out.println(i);
             rearrangedMatrixByColumn.setColumn(i, distanceMatrix.getColumn(permutation.get(i) - INDEX_TRANSLATION));
         }
         RealMatrix rearrangedMatrixByRowAndColumn = rearrangedMatrixByColumn.copy();
@@ -95,6 +97,51 @@ public class QapCase {
 //        permutation.forEach(n -> System.out.print(n + " "));
 //        System.out.println("++++++++++++++++++++");
         return rearrangedMatrixByRowAndColumn;
+    }
+
+    public Integer evaluateSubVector(List<Integer> subVector) {
+        List<Integer> fakePermutation = getFakePermutation(subVector);
+        RealMatrix rearrangedDistanceMatrix = applyGenomePermutationToMatrix(fakePermutation, distanceMatrix);
+        RealMatrix rearrangedSubDistanceMatrix = getSubMatrix(subVector, rearrangedDistanceMatrix);
+        RealMatrix subFlowMatrix = getSubMatrix(subVector, flowMatrix);
+        RealMatrix costsMatrix = hadamardMult(subFlowMatrix, rearrangedSubDistanceMatrix, subVector.size());
+        RealMatrixPreservingVisitor sumVisitor = new RealMatrixSumVisitor();
+        return (int) costsMatrix.walkInOptimizedOrder(sumVisitor);
+    }
+
+    private RealMatrix getSubMatrix(List<Integer> subVector, RealMatrix matrix) {
+        int subN = subVector.size();
+        RealMatrix subMatrixByColumn = MatrixUtils.createRealMatrix(n, subN);
+        List<RealMatrix> subColumns = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            if (subVector.contains(i + INDEX_TRANSLATION)) {
+                subColumns.add(matrix.getColumnMatrix(i));
+            }
+        }
+        for (int i = 0; i < subN; i++) {
+            subMatrixByColumn.setColumnMatrix(i, subColumns.get(i));
+        }
+
+        RealMatrix subMatrix = MatrixUtils.createRealMatrix(subN, subN);
+        List<RealMatrix> subRows = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            if (subVector.contains(i + INDEX_TRANSLATION)) {
+                subRows.add(subMatrixByColumn.getRowMatrix(i));
+            }
+        }
+        for (int i = 0; i < subN; i++) {
+            subMatrix.setRowMatrix(i, subRows.get(i));
+        }
+
+        return subMatrix;
+    }
+
+    private List<Integer> getFakePermutation(List<Integer> subVector) {
+        List<Integer> result = new ArrayList<>(subVector);
+        while (result.size() < n) {
+            result.add(1);
+        }
+        return result;
     }
 
     @Override
@@ -137,4 +184,5 @@ public class QapCase {
             return sum;
         }
     }
+
 }

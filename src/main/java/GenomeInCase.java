@@ -5,12 +5,12 @@ import java.util.function.Supplier;
 /**
  * Created by maciej on 01.03.18.
  */
-public class GenomeInCase {
+public class GenomeInCase implements Comparable<GenomeInCase> {
     private final Genome genome;
     private final QapCase qapCase;
     private Integer evaluation;
     private boolean requiresNewEvaluation = true;
-    private double currentRoulettePropability = 0;
+    private double currentRouletteProbability = 0;
 
     public GenomeInCase(Genome genome, QapCase qapCase) {
         this.genome = genome;
@@ -45,16 +45,20 @@ public class GenomeInCase {
         );
     }
 
-    public double getCurrentRoulettePropability() {
-        return currentRoulettePropability;
+    public double getCurrentRouletteProbability() {
+        return currentRouletteProbability;
     }
 
-    public void setCurrentRoulettePropability(double currentRoulettePropability) {
-        this.currentRoulettePropability = currentRoulettePropability;
+    public void setCurrentRouletteProbability(double currentRouletteProbability) {
+        this.currentRouletteProbability = currentRouletteProbability;
     }
 
     public boolean valid() {
         return qapCase.getN() == genome.getVector().size();
     }
 
+    @Override
+    public int compareTo(GenomeInCase o) {
+        return this.getEvaluation().compareTo(o.getEvaluation());
+    }
 }

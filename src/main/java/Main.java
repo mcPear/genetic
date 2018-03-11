@@ -12,9 +12,11 @@ public class Main {
                 80, 5, 5, 6922, true, qapCase);
         //100, 100, 50, 1, 5, 1 for 12 case finds max
         //1000, 1000, 50, 30, 2 for 12 case finds fast max
-        System.out.println("\n\nRun: " + run1.run().best);
+//        System.out.println("\n\nRun: " + run1.run().best);
         RandomRun randomRun = new RandomRun(200, 1000, 6922, qapCase);
 //        System.out.println("\n\nRandom run: " + randomRun.run().best);
+        GreedyRun greedyRun = new GreedyRun(qapCase);
+        System.out.println("\n\nGreedy run: " + greedyRun.run());
     }
 
     public static void testCrossover() throws FileNotFoundException {

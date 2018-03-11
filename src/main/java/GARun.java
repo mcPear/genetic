@@ -118,13 +118,13 @@ public class GARun {
         Collections.sort(currentPopulation, Comparator.comparing(GenomeInCase::getFitness));
         for (int i = 0; i < currentPopulation.size(); i++) {
             sumOfPropabilities += scaleFitness(currentPopulation.get(i).getFitness(), minFitness, maxFitness) / sumOfScaledFinesses;
-            currentPopulation.get(i).setCurrentRoulettePropability(sumOfPropabilities);
+            currentPopulation.get(i).setCurrentRouletteProbability(sumOfPropabilities);
         }
         List<GenomeInCase> selectedPopulation = new ArrayList<>();
-        Collections.sort(currentPopulation, Comparator.comparing(GenomeInCase::getCurrentRoulettePropability));
+        Collections.sort(currentPopulation, Comparator.comparing(GenomeInCase::getCurrentRouletteProbability));
         while (selectedPopulation.size() < currentPopulation.size()) {
             double draw = RANDOM.nextDouble();
-            selectedPopulation.add(currentPopulation.stream().filter(gic -> gic.getCurrentRoulettePropability() > draw).findFirst().get());
+            selectedPopulation.add(currentPopulation.stream().filter(gic -> gic.getCurrentRouletteProbability() > draw).findFirst().get());
         }
         currentPopulation = selectedPopulation;
     }
